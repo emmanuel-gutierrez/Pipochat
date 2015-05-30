@@ -45,11 +45,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        ParseObject.registerSubclass(Mensaje.class);
-
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "ha9NfBtO6Vc8Vn0YQamkDwuj8lPniInF3jvRsj8a", "kkDA0D3gFjqV92QIkXWNcUSN5lPTMRoijnV0St9x");
+        ParseObject.registerSubclass(Mensaje.class);
+
         /*ParseUser.enableAutomaticUser();
         ParseUser.getCurrentUser().saveInBackground(); // <--- This Line
         ParseACL defaultACL = new ParseACL();
