@@ -117,7 +117,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 String info = etMensaje.getText().toString();
-                ParseObject mensaje = new ParseObject("Mensaje");
+                //ParseObject mensaje = new ParseObject("Mensaje");
+
+                Mensaje mensaje = new Mensaje();
                 mensaje.put("IDUsuario", sIdUsuario);
                 mensaje.put("texto", info);
                 mensaje.saveInBackground(new SaveCallback() {
