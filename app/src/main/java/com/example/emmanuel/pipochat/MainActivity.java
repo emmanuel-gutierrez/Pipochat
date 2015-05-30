@@ -18,9 +18,11 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
@@ -47,7 +49,10 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "ha9NfBtO6Vc8Vn0YQamkDwuj8lPniInF3jvRsj8a", "kkDA0D3gFjqV92QIkXWNcUSN5lPTMRoijnV0St9x");
+        ParseInstallation.getCurrentInstallation().saveInBackground();
         ParseObject.registerSubclass(Mensaje.class);
+
+        PushService.setDefaultPushCallback(this,MainActivity.class);
 
         /*ParseUser.enableAutomaticUser();
         ParseUser.getCurrentUser().saveInBackground(); // <--- This Line
