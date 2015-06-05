@@ -11,6 +11,7 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.parse.SignUpCallback;
 
 import java.io.Console;
@@ -26,7 +27,11 @@ public class ParseBusiness {
         Parse.enableLocalDatastore(context);
         Parse.initialize(context, "ha9NfBtO6Vc8Vn0YQamkDwuj8lPniInF3jvRsj8a", "kkDA0D3gFjqV92QIkXWNcUSN5lPTMRoijnV0St9x");
         ParseInstallation.getCurrentInstallation().saveInBackground();
-        ParseObject.registerSubclass(Mensaje.class);
+        /*ParseObject.registerSubclass(Mensaje.class);*/
+        ParseObject.registerSubclass(Mensaje2.class);
+        ParseObject.registerSubclass(Conversacion.class);
+
+        PushService.setDefaultPushCallback(context, MainActivity.class);
     }
 
     public Intent AutoLoginCheck(Context context)

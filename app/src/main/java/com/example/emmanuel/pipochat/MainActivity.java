@@ -1,5 +1,6 @@
 package com.example.emmanuel.pipochat;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -34,6 +36,21 @@ import java.util.logging.LogRecord;
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = MainActivity.class.getName();
+    private String sIdUsuario;
+    private String sIdUsuario2;
+    private String sIdConversacion;
+    private EditText etMensaje;
+    private Button btnEnviar;
+    private Conversacion conv;
+    private ListView lvChat;
+    private ArrayList<Mensaje2> mMensajes;
+    private ChatListAdapter mAdapter;
+    private static final int max=50;
+    private Handler handler = new Handler();
+    int swag;
+    private Intent intent ;
+
+    /*private static final String TAG = MainActivity.class.getName();
     private static String sIdUsuario;
     private EditText etMensaje;
     private Button btnEnviar;
@@ -41,61 +58,64 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<Mensaje> mMensajes;
     private ChatListAdapter mAdapter;
     private static final int max=50;
-    private Handler handler = new Handler();
+    private Handler handler = new Handler();*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Parse.enableLocalDatastore(this);
+        ParseObject.registerSubclass(Mensaje2.class);
+        ParseObject.registerSubclass(Conversacion.class);
         Parse.initialize(this, "ha9NfBtO6Vc8Vn0YQamkDwuj8lPniInF3jvRsj8a", "kkDA0D3gFjqV92QIkXWNcUSN5lPTMRoijnV0St9x");
         ParseInstallation.getCurrentInstallation().saveInBackground();
-        ParseObject.registerSubclass(Mensaje.class);
+        /*ParseObject.registerSubclass(Mensaje.class);*/
 
-        PushService.setDefaultPushCallback(this,MainActivity.class);
+
+        PushService.setDefaultPushCallback(this, MainActivity.class);
 
         /*ParseUser.enableAutomaticUser();
         ParseUser.getCurrentUser().saveInBackground(); // <--- This Line
         ParseACL defaultACL = new ParseACL();
-        ParseACL.setDefaultACL(defaultACL, true);
-        */
+        ParseACL.setDefaultACL(defaultACL, true);*/
+
+       Iniciar();
 
 
-
-        if(ParseUser.getCurrentUser()!=null){
+        /*if(ParseUser.getCurrentUser()!=null){
             Iniciar();
         }
         else{
             IniciaSesion();
-        }
+        }*/
+
+
 
         handler.postDelayed(runnable, 100);
-      /*  ParseUser user = new ParseUser();
-        user.setUsername("my name");
-        user.setPassword("my pass");
-        user.setEmail("email@example.com");
-
-// other fields can be set just like with ParseObject
-        user.put("phone", "650-555-0000");
-
-        user.signUpInBackground(new SignUpCallback() {
-            public void done(ParseException e) {
-                if (e == null) {
-                    // Hooray! Let them use the app now.
-                } else {
-                    // Sign up didn't succeed. Look at the ParseException
-                    // to figure out what went wrong
-                }
-            }
-        });*/
     }
 
     private void Iniciar() {
-        sIdUsuario=ParseUser.getCurrentUser().getObjectId();
-        EmpezarMensajeria();
+        /*sIdUsuario=ParseUser.getCurrentUser().getObjectId();
+        intent=getIntent();
+        sIdUsuario2=intent.getStringExtra("IDUsu2");*/
+        sIdUsuario="WUVPqG6u63";
+        sIdUsuario2="XGNFbc3Lg0";
+
+
+
+        if(CountConv()== 0)
+        {
+            InicializarConversacion();
+        }
+        obtenerConve();
+        if (conv != null) {
+            sIdConversacion=conv.getObjectId();
+            EmpezarMensajeria();
+        }
     }
 
-    private void IniciaSesion() {
+    /*private void IniciaSesion() {
         ParseAnonymousUtils.logIn(new LogInCallback() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
@@ -106,8 +126,19 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-    }
+    }*/
 
+    void InicializarConversacion()
+    {
+        Conversacion conv = new Conversacion();
+        conv.put("IDUsuario", sIdUsuario);
+        conv.put("IDUsuario2", sIdUsuario2);
+        conv.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+            }
+        });
+    }
 
     private void EmpezarMensajeria ()
     {
@@ -124,8 +155,9 @@ public class MainActivity extends ActionBarActivity {
                 String info = etMensaje.getText().toString();
                 //ParseObject mensaje = new ParseObject("Mensaje");
 
-                Mensaje mensaje = new Mensaje();
+                Mensaje2 mensaje = new Mensaje2();
                 mensaje.put("IDUsuario", sIdUsuario);
+                mensaje.put("IDConversacion", sIdConversacion);
                 mensaje.put("texto", info);
                 mensaje.saveInBackground(new SaveCallback() {
                     @Override
@@ -161,13 +193,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void recibirMensaje(){
-        ParseQuery<Mensaje> query = ParseQuery.getQuery(Mensaje.class);
+        ParseQuery<Mensaje2> query = ParseQuery.getQuery(Mensaje2.class);
 
         query.setLimit(max);
         query.orderByAscending("createdAt");
-        query.findInBackground(new FindCallback<Mensaje>() {
+        query.whereEqualTo("IDConversacion",sIdConversacion);
+        query.findInBackground(new FindCallback<Mensaje2>() {
             @Override
-            public void done(List<Mensaje> mensajes, ParseException e) {
+            public void done(List<Mensaje2> mensajes, ParseException e) {
                 if(e==null){
                     mMensajes.clear();
                     mMensajes.addAll(mensajes);
@@ -178,6 +211,34 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    private void obtenerConve(){
+        ParseQuery<Conversacion> query2 = ParseQuery.getQuery(Conversacion.class);
+
+        query2.whereEqualTo("IDUsuario", sIdUsuario);
+        query2.whereEqualTo("IDUsuario2", sIdUsuario2);
+
+        try {
+            conv= query2.getFirst();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private int CountConv(){
+        ParseQuery<Conversacion> query2 = ParseQuery.getQuery(Conversacion.class);
+
+        query2.whereEqualTo("IDUsuario", sIdUsuario);
+        query2.whereEqualTo("IDUsuario2", sIdUsuario2);
+
+        try {
+            swag=query2.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return swag;
     }
 
     private Runnable runnable = new Runnable() {

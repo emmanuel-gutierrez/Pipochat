@@ -18,10 +18,10 @@ import java.util.List;
 /**
  * Created by Rodolfo on 5/29/2015.
  */
-public class ChatListAdapter extends ArrayAdapter<Mensaje> {
+public class ChatListAdapter extends ArrayAdapter<Mensaje2> {
     private String mIDUsuario;
 
-    public ChatListAdapter(Context context,String IDUsuario,List<Mensaje> mensajes) {
+    public ChatListAdapter(Context context,String IDUsuario,List<Mensaje2> mensajes) {
         super(context, 0, mensajes);
         this.mIDUsuario=IDUsuario;
     }
@@ -37,7 +37,7 @@ public class ChatListAdapter extends ArrayAdapter<Mensaje> {
             holder.body= (TextView)convertView.findViewById(R.id.tvCuerpo);
             convertView.setTag(holder);
         }
-        final Mensaje mensaje = getItem(posicion);
+        final Mensaje2 mensaje = getItem(posicion);
         final ViewHolder holder = (ViewHolder)convertView.getTag();
         final boolean soyYo= mensaje.obtenerID().equals(mIDUsuario);
 
