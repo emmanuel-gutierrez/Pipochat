@@ -8,4 +8,12 @@
     <string name="enviar">Enviar</string>
     <string name="micuenta">Mi foto</string>
     <string name="sucuenta">Su foto</string>
+    <string name="login">login</string>
+    <string name="password">password</string>
+    <string name="register">sign up</string>
+    <string name="title_activity_login_activity">login_activity</string>
+    <string name="title_activity_register">register</string>
+    <string name="username">username</string>
+    <string name="name">name</string>
+
 </resources>
