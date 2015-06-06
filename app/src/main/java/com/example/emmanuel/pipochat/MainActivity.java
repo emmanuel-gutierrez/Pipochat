@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity {
     private ChatListAdapter mAdapter;
     private static final int max=50;
     private Handler handler = new Handler();
-    int swag;
+    int swag,yolo;
     private Intent intent ;
 
     /*private static final String TAG = MainActivity.class.getName();
@@ -99,19 +99,34 @@ public class MainActivity extends ActionBarActivity {
         /*sIdUsuario=ParseUser.getCurrentUser().getObjectId();
         intent=getIntent();
         sIdUsuario2=intent.getStringExtra("IDUsu2");*/
-        sIdUsuario="WUVPqG6u63";
-        sIdUsuario2="XGNFbc3Lg0";
+        sIdUsuario2="WUVPqG6u63";
+        sIdUsuario="XGNFbc3Lg0";
 
 
 
-        if(CountConv()== 0)
+        if(CountConv()== 1)
         {
-            InicializarConversacion();
+            obtenerConve();
+            if (conv != null) {
+                sIdConversacion=conv.getObjectId();
+                EmpezarMensajeria();
+            }
         }
-        obtenerConve();
-        if (conv != null) {
-            sIdConversacion=conv.getObjectId();
-            EmpezarMensajeria();
+        else if (CountConv2() == 1 )
+        {
+            obtenerConve2();
+            if (conv != null) {
+                sIdConversacion=conv.getObjectId();
+                EmpezarMensajeria();
+            }
+        }
+        else {
+            InicializarConversacion();
+            obtenerConve();
+            if (conv != null) {
+                sIdConversacion=conv.getObjectId();
+                EmpezarMensajeria();
+            }
         }
     }
 
@@ -201,13 +216,13 @@ public class MainActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<Mensaje2>() {
             @Override
             public void done(List<Mensaje2> mensajes, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     mMensajes.clear();
                     mMensajes.addAll(mensajes);
                     mAdapter.notifyDataSetChanged();
                     lvChat.invalidate();
-                }else{
-                    Log.d("message","Error: "+e.getMessage());
+                } else {
+                    Log.d("message", "Error: " + e.getMessage());
                 }
             }
         });
@@ -218,6 +233,20 @@ public class MainActivity extends ActionBarActivity {
 
         query2.whereEqualTo("IDUsuario", sIdUsuario);
         query2.whereEqualTo("IDUsuario2", sIdUsuario2);
+
+        try {
+            conv= query2.getFirst();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void obtenerConve2(){
+        ParseQuery<Conversacion> query2 = ParseQuery.getQuery(Conversacion.class);
+
+        query2.whereEqualTo("IDUsuario2", sIdUsuario);
+        query2.whereEqualTo("IDUsuario", sIdUsuario2);
 
         try {
             conv= query2.getFirst();
@@ -239,6 +268,20 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         return swag;
+    }
+
+    private int CountConv2(){
+        ParseQuery<Conversacion> query2 = ParseQuery.getQuery(Conversacion.class);
+
+        query2.whereEqualTo("IDUsuario2", sIdUsuario);
+        query2.whereEqualTo("IDUsuario", sIdUsuario2);
+
+        try {
+            yolo=query2.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return yolo;
     }
 
     private Runnable runnable = new Runnable() {
